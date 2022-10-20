@@ -8,6 +8,7 @@ public class CachedGeometries
     public static SortedDictionary<int, Stack<BetterList<Vector3>>> cachedListsOfVector3List = new SortedDictionary<int, Stack<BetterList<Vector3>>>();
     public static SortedDictionary<int, Stack<BetterList<Color32>>> cachedListsOfColorList = new SortedDictionary<int, Stack<BetterList<Color32>>>();
 
+    //把UIGeometry里的用的数据数组全部塞入缓冲池中
     public static void PushToCachedGeometries(UIGeometry geometry)
     {
         PushToCachedGeometries(geometry.verts, geometry.uvs, geometry.cols, geometry.mRtpVerts);
@@ -18,8 +19,10 @@ public class CachedGeometries
         Stack<BetterList<T>> listsOfTList;
         if (!cache.TryGetValue(source.buffer.Length, out listsOfTList))
         {
+            //如果字典中不存在对应长度的key，创建新的key-value
             cache[source.buffer.Length] = (listsOfTList = new Stack<BetterList<T>>());
         }
+        //直接塞入，不清除每个item数据吗
         listsOfTList.Push(source);
     }
 

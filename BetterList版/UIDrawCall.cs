@@ -164,7 +164,9 @@ public class UIDrawCall : MonoBehaviour
     {
         if (mCache.size < indexCount)
         {
+			//索引不够，进行扩容，为2次幂扩容方式。
             mCache.MakeLargerThan(indexCount);
+			//增加新的顶点索引数据
             for (int i = mCache.size / 3 * 2; i < vertexCount; i += 4)
             {
                 mCache.Add(i);
@@ -179,8 +181,10 @@ public class UIDrawCall : MonoBehaviour
         mCache.AsArrayOfLength(indexCount, action);
     }
 #else
+	//老的顶点索引缓存
     int[] GenerateCachedIndexBuffer (int vertexCount, int indexCount)
 	{
+		//顶点索引缓存足够，直接赋值返回
 		for (int i = 0, imax = mCache.Count; i < imax; ++i)
 		{
 			int[] ids = mCache[i];
@@ -188,9 +192,11 @@ public class UIDrawCall : MonoBehaviour
 				return ids;
 		}
 
+		//顶点索引缓存不够，创建新的，这里new产生了 gc
 		int[] rv = new int[indexCount];
 		int index = 0;
 
+		//顶点是4个，但是需要6个索引（2个三角形共用2个顶点） https://www.wenjiangs.com/doc/xhohga6x
 		for (int i = 0; i < vertexCount; i += 4)
 		{
 			rv[index++] = i;
@@ -202,6 +208,7 @@ public class UIDrawCall : MonoBehaviour
 			rv[index++] = i;
 		}
 
+		//超过了扩容的，移除缓存值的一条
 		if (mCache.Count > maxIndexBufferCache) mCache.RemoveAt(0);
 		mCache.Add(rv);
 		return rv;
